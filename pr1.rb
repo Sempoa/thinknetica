@@ -53,7 +53,7 @@ end
 
 class Train
   
-  attr_reader :number, :type , :route, :station, :speed, :count_wag, :station_index
+  attr_reader :number, :type , :route, :station, :speed, :count_wag
 
   def initialize(number, type, count_wag)
     @number = number
@@ -89,7 +89,6 @@ class Train
   def route=(route)
     @route = route
     @station = self.route.stations.first
-    @station_index = self.route.stations.index(@station)
   end
 
   def index
