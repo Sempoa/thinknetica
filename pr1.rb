@@ -48,7 +48,7 @@ class Route
   end
 
   def all_stations
-    self.stations.each {|station| station.name}
+    self.stations.each {|station| puts station.name}
   end
 
 end
