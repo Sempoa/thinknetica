@@ -1,4 +1,10 @@
+require_relative 'factory'
+require_relative 'instance_counter'
+
 class Wagon
+
+  include Factory
+  include InstanceCounter
 
   attr_accessor :type, :number
 
