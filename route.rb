@@ -1,9 +1,14 @@
+require_relative 'instance_counter'
+
 class Route
+
+  include InstanceCounter
 
   attr_accessor :stations
 
   def initialize(first_station, last_station)
     @stations = [first_station, last_station]
+    register_instance
   end
 
   def add_station(station)
@@ -24,10 +29,10 @@ class Route
   def last_station
     @stations[-1]
   end
-=end
 
   def all_stations
     self.stations.each {|station| puts station.name}
   end
+=end
 
 end
