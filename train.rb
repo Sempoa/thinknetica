@@ -1,12 +1,26 @@
+require_relative 'factory'
+require_relative 'instance_counter'
+
 class Train
 
+  include InstanceCounter
+  include Factory
+
   attr_accessor :number, :route, :station, :speed, :type, :wagons
+
+  @@trains = {}
+
+  def self.find(number)
+    @@trains[number]
+  end
 
   def initialize(number, type)
     @number = number
     @speed = 0
     @wagons = []
     @type = type
+    @@trains[number] = self
+    register_instance
   end
 
   def plus_speed(speed)
@@ -73,3 +87,4 @@ class Train
   end
 
 end
+
