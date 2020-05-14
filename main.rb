@@ -7,5 +7,10 @@ require_relative 'wagon'
 require_relative 'pass-wagon'
 require_relative 'cargo-wagon'
 require_relative 'interface'
+require_relative 'factory'
+require_relative 'instance_counter'
+require_relative 'validate'
+
+
 
 Interface.new.run
