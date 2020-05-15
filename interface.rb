@@ -115,6 +115,10 @@ class Interface
     train = PassengerTrain.new(number)
     self.trains << train
     puts "Создан пассажирский поезд номер #{number}"
+  rescue RuntimeError => e
+    raise unless e.message == "Недопустимый формат номера"
+    puts "#{e.message}"
+    retry
   end
 
   def create_train_cargo
@@ -123,6 +127,10 @@ class Interface
     train = CargoTrain.new(number)
     self.trains << train
     puts "Создан грузовой поезд номер #{number}"
+  rescue RuntimeError => e
+    raise unless e.message == "Недопустимый формат номера"
+    puts "#{e.message}"
+    retry
   end
 
   def create_route
@@ -216,6 +224,10 @@ class Interface
       wagon = CargoWagon.new(num)
     end
     train.add_wag(wagon)
+  rescue RuntimeError => e
+    raise unless e.message == "Недопустимый формат номера"
+    puts "#{e.message}"
+    retry
   end
 
   def delete_wagon
