@@ -1,12 +1,26 @@
 class Train
 
+  include InstanceCounter
+  include Factory
+  include Validation
+  FORMAT = /^([a-zа-я]|\d){3}-?([a-zа-я]|\d){2}$/i
+
   attr_accessor :number, :route, :station, :speed, :type, :wagons
+
+  @@trains = {}
+
+  def self.find(number)
+    @@trains[number]
+  end
 
   def initialize(number, type)
     @number = number
+    @type = type
+    validate!
     @speed = 0
     @wagons = []
-    @type = type
+    @@trains[number] = self
+    register_instance
   end
 
   def plus_speed(speed)
@@ -53,9 +67,6 @@ class Train
     end
   end
 
-
-  protected #используется внутри классов, доступ пользователю не нужен
-
   def next_station
     if self.index != -1
       self.route.stations[self.index + 1]
@@ -68,8 +79,15 @@ class Train
     end
   end
 
+  protected #используется внутри классов, доступ пользователю не нужен
+
+  def validate!
+    raise "Недопустимый формат номера" if number !~ FORMAT
+  end
+
   def index
     self.route.stations.index(station)
   end
 
 end
+
