@@ -45,6 +45,10 @@ class Train
     end
   end
 
+  def block_wagons(&block)
+    self.wagons.each { |wagon| yield(wagon) } if block_given?
+  end
+
   def route=(route)
     @route = route
     @station = self.route.stations.first
