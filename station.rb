@@ -4,6 +4,7 @@ class Station
   include Validation
   FORMAT = /^([a-zа-я]|\d){2,50}$/i
 
+
   attr_accessor :name, :trains
   
   @@stations = []
@@ -26,6 +27,10 @@ class Station
 
   def send_train(train)
     self.trains.delete(train)
+  end
+
+  def block_trains
+    self.trains.each { |train| yield(train) } if block_given?
   end
 
   protected
