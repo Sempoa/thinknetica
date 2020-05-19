@@ -62,6 +62,7 @@ class Interface
   def information_object
     puts '1. Список всех станций'
     puts '2. Список всех поездов на станции'
+    puts '3. Список всех вагонов поезда'
     puts '0. Вернуться в предыдущее меню'
     user = gets.to_i
     case user
@@ -69,6 +70,8 @@ class Interface
       stations_list
     when 2
       station_trains_list
+    when 3
+      wagons_list
     when 0
       return
     end
@@ -80,7 +83,8 @@ class Interface
     puts '3. Назначить маршрут поезду'
     puts '4. Прицепить вагон к поезду'
     puts '5. Отцепить вагон от поезда'
-    puts '6. Переместить поезд'
+    puts '6. Занять или заполнить место в поезде'
+    puts '7. Переместить поезд'
     puts '0. Вернуться в предыдущее меню'
     user = gets.to_i
     case user
@@ -93,14 +97,16 @@ class Interface
     when 4
       add_wagon
     when 5
-      delete_wagon 
+      delete_wagon
     when 6
+      value_minus
+    when 7
       move_train
     when 0
       return
     end
   end
-#----------------------------------------------------------------------------------------------------------creation
+#---------------------------------------------------------------------------------------creation
   def create_station
     puts 'Введите название станции'
     name = gets.to_s
@@ -146,7 +152,7 @@ class Interface
     self.routes << route
     puts "Создан новый маршрут от станции #{first_station.name} до станции #{last_station.name}"
   end
-#---------------------------------------------------------------------------------------------------------list
+#-------------------------------------------------------------------------------------------list
   def station_trains_list
     if self.stations.empty?
       puts 'Нет доступных станций'
@@ -158,9 +164,7 @@ class Interface
       puts 'Нет доступных поездов на станции'
       return
     end
-    station.trains.each do |train|
-      puts "Поезд номер #{train.number} типа #{train.type} с количеством вагонов #{train.wagons.length}"
-    end
+    station.block_trains { |train| puts "Поезд номер #{train.number} типа #{train.type} с количеством вагонов #{train.wagons.length}" }
   end 
   
   def stations_list
@@ -170,7 +174,25 @@ class Interface
     end
     self.stations.each { |station| puts station.name }
   end
- #--------------------------------------------------------------------------------------------------------choosing
+
+  def wagons_list
+    if self.trains.empty?
+      puts 'Нет доступных поездов'
+      return
+    end
+    puts 'Выберите поезд'
+    train = choose_train
+    if train.wagons.empty?
+      puts 'Нет доступных вагонов'
+      return
+    end
+    if train.class == PassengerTrain
+      train.block_wagons { |wagon| puts "Вагон номер #{wagon.number}, тип #{wagon.type}, количество мест #{wagon.space}, количество свободных мест #{wagon.space - wagon.occupied_space}, количество занятых мест #{wagon.occupied_space}" }
+    else
+      train.block_wagons { |wagon| puts "Вагон номер #{wagon.number}, тип #{wagon.type}, объём #{wagon.space}, свободный объём #{wagon.space - wagon.occupied_space}, занятый объём #{wagon.occupied_space}" }
+    end
+  end
+ #--------------------------------------------------------------------------------------choosing
   def choose_station
      iterator(self.stations)
   end
@@ -182,7 +204,7 @@ class Interface
   def choose_train
     iterator(self.trains)
   end
-#---------------------------------------------------------------------------------------------------------add-delete
+#------------------------------------------------------------------------------------add-delete
   def add_route_station
     if self.routes.empty?
       puts 'Нет доступного маршрута'
@@ -217,11 +239,15 @@ class Interface
     if train.class == PassengerTrain
       puts "Введите номер вагона"
       num = gets
-      wagon = PassWagon.new(num)
+      puts "Введите количество посадочных мест в вагоне"
+      free_seats = gets.to_i
+      wagon = PassWagon.new(num, free_seats)
     else
       puts "Введите номер вагона"
       num = gets
-      wagon = CargoWagon.new(num)
+      puts "Введите объём вагона"
+      space_volume = gets.to_i
+      wagon = CargoWagon.new(num, space_volume)
     end
     train.add_wag(wagon)
   rescue RuntimeError => e
@@ -241,6 +267,27 @@ class Interface
     wagon = iterator(train.wagons)
     train.del_wag(wagon)
   end
+
+  def value_minus
+    if self.trains.empty?
+      puts 'Нет доступных поездов'
+      return
+    end
+    puts 'Выберите поезд'
+    train = choose_train
+    if train.class == PassengerTrain
+      puts 'Выберете вагон, в который должен сесть пассажир'
+      wagon = iterator(train.wagons)
+      wagon.take_value
+    else
+      puts 'Выберете вагон, в который нужно положить груз'
+      wagon = iterator(train.wagons)
+      puts 'Введите объём груза'
+      take = gets.to_i
+      wagon.take_value(take)
+    end
+  end
+
 #-------------------------------------------------------------------------------------assigment
   def route_assigment
     if self.trains.empty? || self.routes.empty?
