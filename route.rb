@@ -1,9 +1,11 @@
+
 class Route
 
   include InstanceCounter
   include Validation
 
   attr_accessor :stations
+  validate :stations, :type, Station
 
   def initialize(first_station, last_station)
     @stations = [first_station, last_station]
@@ -21,6 +23,7 @@ class Route
     end
   end
 
+
   def first_station
     @stations[0]
   end
@@ -29,12 +32,10 @@ class Route
     @stations[-1]
   end
 
-=begin
   def all_stations
     self.stations.each {|station| puts station.name}
   end
-=end
-
+=begin
   protected
 
   def validate!
@@ -43,5 +44,5 @@ class Route
     end
     raise "Недопустимый маршрут. Начальная станция не должна совпадать с конечной" if first_station == last_station
   end
-
+=end
 end
