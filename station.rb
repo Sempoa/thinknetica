@@ -5,8 +5,12 @@ class Station
   FORMAT = /^([a-zа-я]|\d){2,50}$/i
 
   attr_accessor :name, :trains
-  
+
+
   @@stations = []
+
+  validate :name, :presence
+  validate :name, :format, FORMAT
 
   def self.all
     @@stations
@@ -27,12 +31,13 @@ class Station
   def send_train(train)
     self.trains.delete(train)
   end
-
+=begin
   protected
+
 
   def validate!
     raise "Имя станции должно содержать хотя бы два символа" if self.name.nil?
     raise "Имя станции должно содержать хотя бы два символа" if self.name !~ FORMAT
   end
-
+=end
 end
