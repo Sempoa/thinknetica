@@ -3,9 +3,12 @@ class Train
   include InstanceCounter
   include Factory
   include Validation
+  include Accessor
   FORMAT = /^([a-zа-я]|\d){3}-?([a-zа-я]|\d){2}$/i
 
-  attr_accessor :number, :route, :station, :speed, :type, :wagons
+  attr_accessor_with_history :number, :route, :station, :speed, :type, :wagons
+  #attr_accessor :number, :route, :station, :speed, :type, :wagons
+  validate :number, :format, FORMAT
 
   @@trains = {}
 
@@ -45,6 +48,10 @@ class Train
     end
   end
 
+  def block_wagons
+    self.wagons.each { |wagon| yield(wagon) } if block_given?
+  end
+
   def route=(route)
     @route = route
     @station = self.route.stations.first
@@ -79,15 +86,16 @@ class Train
     end
   end
 
+=begin
   protected #используется внутри классов, доступ пользователю не нужен
 
   def validate!
     raise "Недопустимый формат номера" if number !~ FORMAT
   end
+=end
 
   def index
     self.route.stations.index(station)
   end
 
 end
-
